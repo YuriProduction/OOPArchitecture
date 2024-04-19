@@ -1,21 +1,25 @@
 package ru.urfu;
 
+import java.util.List;
+
 /**
  * Класс для запуска приложения
  */
-public class Application {
+public class Application
+{
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         String telegramBotName = System.getenv("telegram_botName");
         String telegramToken = System.getenv("telegram_token");
-        new TelegramBot(telegramBotName, telegramToken)
-                .start();
+        final String discordToken = System.getenv("discord_token");
+        List<IBot> bots = List.of(
+                new TelegramBot(telegramBotName, telegramToken),
+                new DiscordBot(discordToken)
+        );
+        for (IBot bot : bots)
+            bot.start();
 
-        String discordToken = System.getenv("discord_token");
-        new DiscordBot(discordToken)
-                .start();
-
-        // сколько угодно чат платформ и все должны работать одинаково
     }
 
 }
