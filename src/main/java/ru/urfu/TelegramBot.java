@@ -11,13 +11,14 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 /**
  * Телеграм бот
  */
-public class TelegramBot extends TelegramLongPollingBot implements IBot {
-
+public class TelegramBot extends TelegramLongPollingBot{
+    private final Logic logic;
     private final String telegramBotName;
 
-    public TelegramBot(String telegramBotName, String token) {
+    public TelegramBot(String telegramBotName, String token, Logic logic) {
         super(token);
         this.telegramBotName = telegramBotName;
+        this.logic = logic;
     }
 
     public void start() {
@@ -31,18 +32,12 @@ public class TelegramBot extends TelegramLongPollingBot implements IBot {
     }
 
     @Override
-    public void reply(String chatID, String message, String baseMessage)
-    {
-        this.sendMessage(chatID, message, baseMessage);
-    }
-
-    @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message updateMessage = update.getMessage();
             Long chatId = updateMessage.getChatId();
             String messageFromUser = updateMessage.getText();
-            // TODO обработайте сообщение от пользователя (messageFromUser)
+            sendMessage(String.valueOf(chatId),messageFromUser);
         }
     }
 
@@ -51,10 +46,10 @@ public class TelegramBot extends TelegramLongPollingBot implements IBot {
      * @param chatId идентификатор чата
      * @param message текст сообщения
      */
-    public void sendMessage(String chatId, String message, String baseMessage) {
+    public void sendMessage(String chatId, String message) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText(baseMessage + "'" + message + "'" + ".");
+        sendMessage.setText(logic.createMessage(message));
 
         try {
             execute(sendMessage);
