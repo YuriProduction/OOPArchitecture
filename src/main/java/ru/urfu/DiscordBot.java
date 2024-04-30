@@ -40,7 +40,8 @@ public class DiscordBot
                     {
                         String chanelID = eventMessage.getChannelId().asString();
                         String messageFromUser = eventMessage.getContent();
-                        sendMessage(chanelID, messageFromUser);
+                        final String message = logic.createMessage(messageFromUser);
+                        sendMessage(chanelID, message);
                     }
                 });
         System.out.println("Discord бот запущен");
@@ -59,7 +60,7 @@ public class DiscordBot
         MessageChannel channel = client.getChannelById(channelId).ofType(MessageChannel.class).block();
         if (channel != null)
         {
-            channel.createMessage(logic.createMessage(message)).block();
+            channel.createMessage(message).block();
         } else
         {
             System.err.println("Канал не найден");

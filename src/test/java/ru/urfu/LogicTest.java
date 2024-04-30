@@ -15,6 +15,6 @@ class LogicTest
     {
         final Logic logic = new Logic();
         final String userMessage = "Привет, бот!";
-        assertEquals(logic.createMessage(userMessage), "Ваше сообщение: 'Привет, бот!'");
+        assertEquals("Ваше сообщение: 'Привет, бот!'", logic.createMessage(userMessage));
     }
 }
