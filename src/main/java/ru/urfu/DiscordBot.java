@@ -10,19 +10,24 @@ import discord4j.core.object.entity.channel.MessageChannel;
 /**
  * Дискорд бот
  */
-public class DiscordBot {
-
+public class DiscordBot
+{
+    private final Logic logic;
     private final String token;
 
     private GatewayDiscordClient client;
 
-    public DiscordBot(String token) {
+    public DiscordBot(String token, Logic logic)
+    {
         this.token = token;
+        this.logic = logic;
     }
 
-    public void start() {
+    public void start()
+    {
         client = DiscordClient.create(token).login().block();
-        if (client == null) {
+        if (client == null)
+        {
             throw new RuntimeException("Ошибка при входе в Discord");
         }
         client.on(MessageCreateEvent.class)
@@ -31,10 +36,12 @@ public class DiscordBot {
                 })
                 .subscribe(event -> {
                     Message eventMessage = event.getMessage();
-                    if (eventMessage.getAuthor().map(user -> !user.isBot()).orElse(false)) {
-                        String chatId = eventMessage.getChannelId().asString();
+                    if (eventMessage.getAuthor().map(user -> !user.isBot()).orElse(false))
+                    {
+                        String chanelID = eventMessage.getChannelId().asString();
                         String messageFromUser = eventMessage.getContent();
-                        // TODO обработайте сообщение от пользователя (messageFromUser)
+                        final String message = logic.createMessage(messageFromUser);
+                        sendMessage(chanelID, message);
                     }
                 });
         System.out.println("Discord бот запущен");
@@ -43,15 +50,19 @@ public class DiscordBot {
 
     /**
      * Отправить сообщение
-     * @param chatId идентификатор чата
+     *
+     * @param chatId  идентификатор чата
      * @param message текст сообщения
      */
-    public void sendMessage(String chatId, String message) {
+    public void sendMessage(String chatId, String message)
+    {
         Snowflake channelId = Snowflake.of(chatId);
         MessageChannel channel = client.getChannelById(channelId).ofType(MessageChannel.class).block();
-        if (channel != null) {
+        if (channel != null)
+        {
             channel.createMessage(message).block();
-        } else {
+        } else
+        {
             System.err.println("Канал не найден");
         }
     }
